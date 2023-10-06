@@ -60,14 +60,14 @@ If you are benefited by this repository or the research, please cite the work as
 
 ## Output Folder Structure
 ```
-[Subject Folder]<br />
-└── FEM_[FEM Order]<br />
-    ├── Error_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat<br />
-    ├── Memory_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat<br />
-    ├── Set_up_Time_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat<br />
-    ├── Timing_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat<br />
-    ├── Memory_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat<br />
-    ├── grid_fields_[Grid Spacing]_[Coil Model].mat<br />
+[Subject Folder]
+└── FEM_[FEM Order]
+    ├── Error_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
+    ├── Memory_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
+    ├── Set_up_Time_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
+    ├── Timing_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
+    ├── Memory_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
+    ├── grid_fields_[Grid Spacing]_[Coil Model].mat
     ├── GT_E_Fields_[Coil Model]
     │   ├── E_org_1.mat
     │   ├── E_org_2.mat
