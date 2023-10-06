@@ -59,6 +59,7 @@ If you are benefited by this repository or the research, please cite the work as
 
 
 ## Output Folder Structure
+```
 [Subject Folder]
 └── FEM_[FEM Order]
     ├── Error_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
@@ -92,7 +93,7 @@ If you are benefited by this repository or the research, please cite the work as
     │   ├── ...
     │   └── Q_[# Modes].mat
     ├── Random_Coil_Placement_IDs_[Coil Model].mat
-
+```
 
 
 
