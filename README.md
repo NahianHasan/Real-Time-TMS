@@ -24,11 +24,13 @@ If you are benefited by this repository or the research, please cite the work as
 
 
 ## Folders
-- Coil_Models---------------------------- TMS coil models (the current version works for only electric dipoles).<br />
-- Example_Scripts------------------------ Contains example scripts to run the real-time TMS.<br />
-- Real_Time_TMS_Fiels-------------------- Contains the source code.<br />
-- Data----------------------------------- Contains example data.<br />
-- solutions------------------------------ Contains example modes and example solutions of the ernie head model from SimNIBS.<br />
+| Folder | Description |
+| --- | --- | --- |
+| Coil_Models | TMS coil models (the current version works for only electric dipoles). |
+| Example_Scripts | Contains example scripts to run the real-time TMS. |
+| Real_Time_TMS_Fiels | Contains the source code. |
+| Data | Contains example data. |
+| solutions | Contains example modes and example solutions of the ernie head model from SimNIBS. |
 
 
 ## Steps to run the real-time TMS
