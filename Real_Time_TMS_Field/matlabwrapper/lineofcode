@@ -1,0 +1,2 @@
+-shared -fexceptions -output ../matlab/FEM.mexw64  ../matlab/FEM.c  ../obj/lfmm3dpart.o ../obj/lfmm3drouts.o ../obj/d3tstrcr.o ../obj/d3mtreeplot.o ../obj/prini.o ../obj/l3dterms.o ../obj/laprouts3d.o ../obj/l3dtrans.o ../obj/prinm.o ../obj/yrecursion.o ../obj/legeexps.o ../obj/rotviarecur3.o ../obj/fmmutils_f.o ../obj/femrhs.o ../obj/Eprim.o ../obj/assemble.o -I/Home/ljg/soft/winmat/include -L/Home/ljg/soft/winmat/win64 -lmex -lmat -lmx -lm -lgfortran -static -lgomp  -L../contrib/pebbles/lib/lib_linux_opt/  -lstdc++ -lprepro -lsolver  -lmatrix  -lsetup -lparallel
+

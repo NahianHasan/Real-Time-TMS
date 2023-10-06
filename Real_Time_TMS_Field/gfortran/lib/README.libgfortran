@@ -1,0 +1,9 @@
+
+The GCC runtime libraries included here:
+
+    libgfortran.3.dylib
+
+and associated symlinks are part of gcc-4.3.0,
+available from ftp.gnu.org.  They are included with MATLAB
+in the event that your distribution does not provide them.
+

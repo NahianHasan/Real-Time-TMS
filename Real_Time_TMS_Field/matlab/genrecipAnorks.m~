@@ -1,0 +1,22 @@
+function [tri,pp,Eaux,Anor]=genrecipAnorks(te2p,p,conductivity,teid,that,rs,ks,omega,Anor,th_hair,N,FEMord)
+
+[raux,kaux]=resamplecoil(rs2,ks2,N,360);
+clear rs2 ks2;
+raux(4,:)=1;
+robs=zeros([size(raux) np]);
+for i=1:np
+robs(:,:,i)=Anor(:,:,i)*raux;
+end
+robs=reshape(robs(1:3,:,:),[3 prod(N)*np]);
+
+[rv11,jv11]=runcoderecipTensor(te2p,p,conductivity,teid(:)-1,that,FEMord);
+tic
+[Hobs]=computeHprimary(rv11,jv11,numel(rv11)/3,robs,numel(robs)/3);
+toc
+Hobs=reshape(Hobs,[3 prod(N),np]);
+Eaux=zeros([360 np]);
+for j=1:np
+for i=1:360
+    Eaux(i,j)=-omega*sum(kaux(3,:,i).*(Anor(1:3,3,j)'*Hobs(:,:,j)));
+end
+end

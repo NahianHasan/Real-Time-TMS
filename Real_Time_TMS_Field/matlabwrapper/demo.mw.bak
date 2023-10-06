@@ -1,0 +1,757 @@
+% MWrap file for C demo w/ OpenMP.
+% Generates gateway.c, array2d.m and array2domp.m.
+% Illustrates inout type, and multiple interfaces in a single gateway.
+% First see ../c/demo.mw on which this example builds.
+% --------------------------------------------------------------------------
+$[
+#include <uchar.h>
+void    rhsrecip(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int nsource, double *that,int* teid,double* rhs);
+void rhsrecip2nd(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int nsource, double *that,int* teid,double* rhs);
+void rhsrecip3rd(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int nsource, double *that,int* teid,double* rhs);
+
+void  rhsrecipmd(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int nsource, double* that,int* teid,double* rhs);
+
+
+void    conductioncurr(const  int* te2p,const  int nte,const double* p,const double* sigma, const double* u,  double* rv,  double* jv);
+void conductioncurr2nd(const  int* te2p,const  int nte,const double* p,const double* sigma, const double* u,  double* rv,  double* jv);
+void conductioncurr3rd(const  int* te2p,const  int nte,const double* p,const double* sigma, const double* u,  double* rv,  double* jv);
+
+void conductioncurrandfield(const  int* te2p,const  int nte,const double* p,const double* sigma, const double* u,  double* rv,  double* jv,  double* Emid);
+
+void    conductioncurrTensor(const  int* te2p,const  int nte,const double* p,const double* sigma, const double* u,  double* rv,  double* jv);
+void conductioncurr2ndTensor(const  int* te2p,const  int nte,const double* p,const double* sigma, const double* u,  double* rv,  double* jv);
+void conductioncurr3rdTensor(const  int* te2p,const  int nte,const double* p,const double* sigma, const double* u,  double* rv,  double* jv);
+
+void impressedcurr(const  int* te2p,const  int nte,const double* p , const double* that,const int* teid,int nsource,  double* rv,  double* jv);
+
+void Hprim(int nsource,int ntarget, double *rs,double* js,double* robs, double* Hprimary,double iprec);
+void Eprim(int nsource,int ntarget, double *rs,double* js,double* robs, double* Eprimary,double iprec);
+void Aprim(int nsource,int ntarget, double *rs,double* js,double* robs, double* Aprimary,double* curlAprimary,double iprec);
+void Ephiprim(int nsource,int ntarget, double *rs,double* rho,double* robs, double* Ephiprimary,double iprec);
+void Eprimrsjsksrho(int nsource,int ntarget, double *rs,double* js,double* ks,double* rho,double* robs, double* Eprimary,double iprec);
+
+   void rhsfunc(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int nsource, double* rs,double* js,double* rhs,double iprec);
+void rhsfunc2nd(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int nsource, double *rs,double* js,double* rhs,double iprec);
+void rhsfunc3rd(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int nsource, double *rs,double* js,double* rhs,double iprec);
+void rhsfuncrsjsksrhos(int nte,int np,int* te2p,double* p,double* reg,int nsource,double *rs, double* js, double* ks, double* rho,double* rhs,double iprec);
+
+void rhsfuncks(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int nsource, double* rs,double* js,double* rhs,double iprec);
+void rhsfunc2ndks(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int nsource, double *rs,double* js,double* rhs,double iprec);
+void rhsfunc3rdks(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int nsource, double *rs,double* js,double* rhs,double iprec);
+void rhsfunckstensor(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int nsource, double *rs,double* js,double* rhs,double iprec);
+
+
+void assemblemat(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int *crvindex,double* val);
+void assemblemat2nd(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int *crvindex,double* val);
+void assemblemat3rd(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int *crvindex,double* val);
+
+
+void assemblemattensor(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int* crvindex,double* val);
+void assemblemat2ndtensor(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int* crvindex,double* val);
+void assemblemat3rdtensor(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int* crvindex,double* val);
+
+
+void pointLocation_f(const  double* robs,const  int nobs,const  int* te2p,const  int nte,const double* p
+  ,const int te_stride,const int* te2te,  int* teid, double* bari);
+
+void secondaryEfield(const  double* robs,const  int nobs,const int* te2te,const  int* te2p,const  int nte,const double* p
+  ,const double* u,  double* soln,const double iprec);
+void secondaryEfield2nd(const  double* robs,const  int nobs,const int* te2te,const  int* te2p,const  int nte,const double* p
+  ,const double* u,  double* soln,const double iprec);
+void secondaryEfield3rd(const  double* robs,const  int nobs,const int* te2te,const  int* te2p,const  int nte,const double* p
+  ,const double* u,  double* soln,const double iprec);
+
+
+void secondaryEfieldc(const  double* robs,const  int nobs,const int* te2te,const  int* te2p,const  int nte,const double* p
+  ,const double* u,  double* soln,const double iprec);
+void secondaryEfield2ndc(const  double* robs,const  int nobs,const int* te2te,const  int* te2p,const  int nte,const double* p
+  ,const double* u,  double* soln,const double iprec);
+void secondaryEfield3rdc(const  double* robs,const  int nobs,const int* te2te,const  int* te2p,const  int nte,const double* p
+  ,const double* u,  double* soln,const double iprec);
+
+void  rhsrecipmd(const int nte,const int np,const  int* te2p,const  double* p,const  double* reg,int nsource, double* that,int* teid,double* rhs);
+
+
+
+void generatemesh3rd(const int nte,const  int* te2p,const double* p,const int np,const int ne,int* te2p2,double* p2);
+void generatemesh2nd(const int nte,const  int* te2p,const double* p,const int np,int* te2p2,double* p2);
+
+int generateedge_ct(const int nte,const  int* te2p);
+int generateface_ct(const int nte,const  int* te2p);
+
+void generatetetrapaths(const int nte,const  int* te2p,int* te2te);
+$]
+
+
+@function [rv,jv]=runcoderecipTensor(te2p,p,conductivity,teid,that,FEMord)
+%te2p is 3 by nte
+%p is 3 by np
+%conductivity 9 by nte
+%teid is ntarget by 1
+%that is 3 by ntarget
+%FEMord is the order of the FEM
+%step 1 geometric preprocessing
+tic
+[te2p2,p2]=femgenmesh_c(te2p,p,FEMord);
+toc
+%% Step 2 assemble FEM matrix
+tic
+A=femassembleTensor(te2p2,p2,conductivity,FEMord);
+toc
+%% Step 3 generate right hand side of equation
+tic
+nte=numel(te2p2(1,:));
+np=numel(p2(1,:));
+nsource=numel(that(1,:));
+rhs=zeros([np 1]);
+if FEMord==1
+#  rhsrecip(int nte,int np,int[4,nte] te2p2,double[3,np] p2,double[9,nte] conductivity,int nsource,inout double[3,nsource] that,int[nsource] teid,inout double[np] rhs);
+elseif FEMord==2
+#  rhsrecip2nd(int nte,int np,int[10,nte] te2p2,double[3,np] p2,double[9,nte] conductivity,int nsource,inout double[3,nsource] that,int[nsource] teid,inout double[np] rhs);
+elseif FEMord==3
+#  rhsrecip3rd(int nte,int np,int[20,nte] te2p2,double[3,np] p2,double[9,nte] conductivity,int nsource,inout double[3,nsource] that,int[nsource] teid,inout double[np] rhs);
+end
+
+toc
+%% Step 4 delete one unknown and equation and define preconditioner
+A=A(1:end-1,1:end-1);
+PRECON=sparse(1:numel(A(:,1)),1:numel(A(:,1)),sqrt(full(diag(A))));
+rhs=rhs(1:end-1);
+%% Step 5 solve system of equations
+tic
+x=minres(A,rhs,10^-10,10000,PRECON,PRECON);
+x(end+1)=0;
+toc
+%% Step 6 evaluate field at desired locations
+ntens=nte+nsource;
+rv=zeros([3,ntens]);
+jv=zeros([3,ntens]);
+if FEMord==1
+#  conductioncurrTensor(int[4,nte] te2p2,int nte,double[3,np] p2,double[9,nte] conductivity,double[np] x,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+elseif FEMord==2
+#  conductioncurr2ndTensor(int[10,nte] te2p2,int nte,double[3,np] p2,double[9,nte] conductivity,double[np] x,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+elseif FEMord==3
+#  conductioncurr3rdTensor(int[20,nte] te2p2,int nte,double[3,np] p2,double[9,nte] conductivity,double[np] x,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+end
+te2p=te2p-1;
+np=numel(p(1,:));
+#  impressedcurr(int[4,nte] te2p,int nte,double[3,np] p, double[3,nsource] that,int[nsource] teid,int nsource,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+
+
+
+@function [rv,jv,Emid]=runcoderecipdebug(te2p,p,conductivity,teid,that,FEMord)
+%te2p is 3 by nte
+%p is 3 by np
+%conductivity nte by 1
+%teid is ntarget by 1
+%that is 3 by ntarget
+%FEMord is the order of the FEM
+%step 1 geometric preprocessing
+tic
+[te2p2,p2]=femgenmesh_c(te2p,p,FEMord);
+toc
+%% Step 2 assemble FEM matrix
+tic
+A=femassemble(te2p2,p2,conductivity,FEMord);
+toc
+%% Step 3 generate right hand side of equation
+tic
+nte=numel(te2p2(1,:));
+np=numel(p2(1,:));
+nsource=numel(that(1,:));
+rhs=zeros([np 1]);
+if FEMord==1
+#  rhsrecip(int nte,int np,int[4,nte] te2p2,double[3,np] p2,double[nte] conductivity,int nsource,inout double[3,nsource] that,int[nsource] teid,inout double[np] rhs);
+elseif FEMord==2
+#  rhsrecip2nd(int nte,int np,int[10,nte] te2p2,double[3,np] p2,double[nte] conductivity,int nsource,inout double[3,nsource] that,int[nsource] teid,inout double[np] rhs);
+elseif FEMord==3
+#  rhsrecip3rd(int nte,int np,int[20,nte] te2p2,double[3,np] p2,double[nte] conductivity,int nsource,inout double[3,nsource] that,int[nsource] teid,inout double[np] rhs);
+end
+
+toc
+%% Step 4 delete one unknown and equation and define preconditioner
+A=A(1:end-1,1:end-1);
+PRECON=sparse(1:numel(A(:,1)),1:numel(A(:,1)),sqrt(full(diag(A))));
+rhs=rhs(1:end-1);
+%% Step 5 solve system of equations
+tic
+x=minres(A,rhs,10^-10,10000,PRECON,PRECON);
+x(end+1)=0;
+toc
+%% Step 6 evaluate field at desired locations
+ntens=nte+nsource;
+rv=zeros([3,ntens]);
+jv=zeros([3,ntens]);
+Emid=zeros([3,ntens]);
+
+if FEMord==1
+#  conductioncurrandfield(int[4,nte] te2p2,int nte,double[3,np] p2,double[nte] conductivity,double[np] x,inout  double[3,ntens] rv,inout  double[3,ntens] jv,inout  double[3,ntens] Emid);
+elseif FEMord==2
+#  conductioncurr2nd(int[10,nte] te2p2,int nte,double[3,np] p2,double[nte] conductivity,double[np] x,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+elseif FEMord==3
+#  conductioncurr3rd(int[20,nte] te2p2,int nte,double[3,np] p2,double[nte] conductivity,double[np] x,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+end
+te2p=te2p-1;
+np=numel(p(1,:));
+#  impressedcurr(int[4,nte] te2p,int nte,double[3,np] p, double[3,nsource] that,int[nsource] teid,int nsource,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+
+
+
+
+
+
+@function [rv,jv]=runcoderecip(te2p,p,conductivity,teid,that,FEMord)
+%te2p is 3 by nte
+%p is 3 by np
+%conductivity nte by 1
+%teid is ntarget by 1
+%that is 3 by ntarget
+%FEMord is the order of the FEM
+%step 1 geometric preprocessing
+tic
+[te2p2,p2]=femgenmesh_c(te2p,p,FEMord);
+toc
+%% Step 2 assemble FEM matrix
+tic
+A=femassemble(te2p2,p2,conductivity,FEMord);
+toc
+%% Step 3 generate right hand side of equation
+tic
+nte=numel(te2p2(1,:));
+np=numel(p2(1,:));
+nsource=numel(that(1,:));
+rhs=zeros([np 1]);
+if FEMord==1
+#  rhsrecip(int nte,int np,int[4,nte] te2p2,double[3,np] p2,double[nte] conductivity,int nsource,inout double[3,nsource] that,int[nsource] teid,inout double[np] rhs);
+elseif FEMord==2
+#  rhsrecip2nd(int nte,int np,int[10,nte] te2p2,double[3,np] p2,double[nte] conductivity,int nsource,inout double[3,nsource] that,int[nsource] teid,inout double[np] rhs);
+elseif FEMord==3
+#  rhsrecip3rd(int nte,int np,int[20,nte] te2p2,double[3,np] p2,double[nte] conductivity,int nsource,inout double[3,nsource] that,int[nsource] teid,inout double[np] rhs);
+end
+
+toc
+%% Step 4 delete one unknown and equation and define preconditioner
+A=A(1:end-1,1:end-1);
+PRECON=sparse(1:numel(A(:,1)),1:numel(A(:,1)),sqrt(full(diag(A))));
+rhs=rhs(1:end-1);
+%% Step 5 solve system of equations
+tic
+x=minres(A,rhs,10^-10,10000,PRECON,PRECON);
+x(end+1)=0;
+toc
+%% Step 6 evaluate field at desired locations
+ntens=nte+nsource;
+rv=zeros([3,ntens]);
+jv=zeros([3,ntens]);
+if FEMord==1
+#  conductioncurr(int[4,nte] te2p2,int nte,double[3,np] p2,double[nte] conductivity,double[np] x,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+elseif FEMord==2
+#  conductioncurr2nd(int[10,nte] te2p2,int nte,double[3,np] p2,double[nte] conductivity,double[np] x,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+elseif FEMord==3
+#  conductioncurr3rd(int[20,nte] te2p2,int nte,double[3,np] p2,double[nte] conductivity,double[np] x,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+end
+te2p=te2p-1;
+np=numel(p(1,:));
+#  impressedcurr(int[4,nte] te2p,int nte,double[3,np] p, double[3,nsource] that,int[nsource] teid,int nsource,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+
+
+
+@function [rv,jv]=runcoderecip(te2p,p,conductivity,teid,that,FEMord)
+%te2p is 3 by nte
+%p is 3 by np
+%conductivity nte by 1
+%teid is ntarget by 1
+%that is 3 by ntarget
+%FEMord is the order of the FEM
+%step 1 geometric preprocessing
+tic
+[te2p2,p2]=femgenmesh_c(te2p,p,FEMord);
+toc
+%% Step 2 assemble FEM matrix
+tic
+A=femassemble(te2p2,p2,conductivity,FEMord);
+toc
+%% Step 3 generate right hand side of equation
+tic
+nte=numel(te2p2(1,:));
+np=numel(p2(1,:));
+nsource=numel(that(1,:));
+rhs=zeros([np 1]);
+if FEMord==1
+#  rhsrecipmd(int nte,int np,int[4,nte] te2p2,double[3,np] p2,double[nte] conductivity,int nsource,inout double[3,nsource] that,int[nsource] teid,inout double[np] rhs);
+elseif FEMord==2
+#  rhsrecip2nd(int nte,int np,int[10,nte] te2p2,double[3,np] p2,double[nte] conductivity,int nsource,inout double[3,nsource] that,int[nsource] teid,inout double[np] rhs);
+elseif FEMord==3
+#  rhsrecip3rd(int nte,int np,int[20,nte] te2p2,double[3,np] p2,double[nte] conductivity,int nsource,inout double[3,nsource] that,int[nsource] teid,inout double[np] rhs);
+end
+
+toc
+%% Step 4 delete one unknown and equation and define preconditioner
+A=A(1:end-1,1:end-1);
+PRECON=sparse(1:numel(A(:,1)),1:numel(A(:,1)),sqrt(full(diag(A))));
+rhs=rhs(1:end-1);
+%% Step 5 solve system of equations
+tic
+x=minres(A,rhs,10^-10,10000,PRECON,PRECON);
+x(end+1)=0;
+toc
+%% Step 6 evaluate field at desired locations
+ntens=nte+nsource;
+rv=zeros([3,ntens]);
+jv=zeros([3,ntens]);
+if FEMord==1
+#  conductioncurr(int[4,nte] te2p2,int nte,double[3,np] p2,double[nte] conductivity,double[np] x,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+elseif FEMord==2
+#  conductioncurr2nd(int[10,nte] te2p2,int nte,double[3,np] p2,double[nte] conductivity,double[np] x,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+elseif FEMord==3
+#  conductioncurr3rd(int[20,nte] te2p2,int nte,double[3,np] p2,double[nte] conductivity,double[np] x,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+end
+te2p=te2p-1;
+np=numel(p(1,:));
+#  impressedcurr(int[4,nte] te2p,int nte,double[3,np] p, double[3,nsource] that,int[nsource] teid,int nsource,inout  double[3,ntens] rv,inout  double[3,ntens] jv);
+
+
+@function [Efield,x,te2p2,p2,te2te]=runcode(te2p,p,conductivity,rs,js,ro,FEMord)
+%te2p is 3 by nte
+%p is 3 by np
+%conductivity nte by 1
+%rs is 3 by nsource
+%js is 3 by nsource
+%ro is 3 by nobs
+%FEMord is the order of the FEM
+%step 1 geometric preprocessing
+tic
+[te2p2,p2]=femgenmesh_c(te2p,p,FEMord);
+[te2te]=gente2te(te2p);
+toc
+%% Step 2 assemble FEM matrix
+tic
+A=femassemble(te2p2,p2,conductivity,FEMord);
+toc
+%% Step 3 generate right hand side of equation
+tic
+[rhs]=femgenrhs(te2p2,p2,conductivity,rs,js,FEMord);
+toc
+%% Step 4 delete one unknown and equation and define preconditioner
+A=A(1:end-1,1:end-1);
+PRECON=sparse(1:numel(A(:,1)),1:numel(A(:,1)),sqrt(full(diag(A))));
+rhs=rhs(1:end-1);
+%% Step 5 solve system of equations
+tic
+x=minres(A,rhs,10^-10,10000,PRECON,PRECON);
+x(end+1)=0;
+toc
+%% Step 6 evaluate field at desired locations
+Efield=FEMinterpolator(te2te,te2p2,p2,rs,js,x,ro,FEMord);
+
+
+@function [Efield,x,te2p2,p2,te2te]=runcodeksc(te2p,p,conductivity,rs,js,ro,FEMord)
+%te2p is 3 by nte
+%p is 3 by np
+%conductivity nte by 1
+%rs is 3 by nsource
+%js is 3 by nsource
+%ro is 3 by nobs
+%FEMord is the order of the FEM
+%step 1 geometric preprocessing
+tic
+[te2p2,p2]=femgenmesh_c(te2p,p,FEMord);
+[te2te]=gente2te(te2p);
+toc
+%% Step 2 assemble FEM matrix
+tic
+A=femassemble(te2p2,p2,conductivity,FEMord);
+toc
+%% Step 3 generate right hand side of equation
+tic
+[rhs]=femgenrhsks(te2p2,p2,conductivity,rs,js,FEMord);
+toc
+%% Step 4 delete one unknown and equation and define preconditioner
+A=A(1:end-1,1:end-1);
+PRECON=sparse(1:numel(A(:,1)),1:numel(A(:,1)),sqrt(full(diag(A))));
+rhs=rhs(1:end-1);
+%% Step 5 solve system of equations
+tic
+x=minres(A,rhs,10^-10,10000,PRECON,PRECON);
+x(end+1)=0;
+toc
+%% Step 6 evaluate field at desired locations
+Efield=FEMinterpolatorksc(te2te,te2p2,p2,rs,js,x,ro,FEMord);
+
+
+
+
+@function [Efield,x,te2p2,p2,te2te]=runcodeks(te2p,p,conductivity,rs,js,ro,FEMord)
+%te2p is 3 by nte
+%p is 3 by np
+%conductivity nte by 1
+%rs is 3 by nsource
+%js is 3 by nsource
+%ro is 3 by nobs
+%FEMord is the order of the FEM
+%step 1 geometric preprocessing
+tic
+[te2p2,p2]=femgenmesh_c(te2p,p,FEMord);
+[te2te]=gente2te(te2p);
+toc
+%% Step 2 assemble FEM matrix
+tic
+A=femassemble(te2p2,p2,conductivity,FEMord);
+toc
+%% Step 3 generate right hand side of equation
+tic
+[rhs]=femgenrhsks(te2p2,p2,conductivity,rs,js,FEMord);
+toc
+%% Step 4 delete one unknown and equation and define preconditioner
+A=A(1:end-1,1:end-1);
+PRECON=sparse(1:numel(A(:,1)),1:numel(A(:,1)),sqrt(full(diag(A))));
+rhs=rhs(1:end-1);
+%% Step 5 solve system of equations
+tic
+x=minres(A,rhs,10^-10,10000,PRECON,PRECON);
+x(end+1)=0;
+toc
+%% Step 6 evaluate field at desired locations
+Efield=FEMinterpolatorks(te2te,te2p2,p2,rs,js,x,ro,FEMord);
+
+
+
+@function [Efield,x,te2p2,p2,te2te]=runcodeksTensor(te2p,p,conductivity,rs,js,ro,FEMord)
+%te2p is 3 by nte
+%p is 3 by np
+%conductivity nte by 1
+%rs is 3 by nsource
+%js is 3 by nsource
+%ro is 3 by nobs
+%FEMord is the order of the FEM
+%step 1 geometric preprocessing
+tic
+[te2p2,p2]=femgenmesh_c(te2p,p,FEMord);
+[te2te]=gente2te(te2p);
+toc
+%% Step 2 assemble FEM matrix
+tic
+A=femassembleTensor(te2p2,p2,conductivity,FEMord);
+toc
+%% Step 3 generate right hand side of equation
+tic
+[rhs]=femgenrhsksTensor(te2p2,p2,conductivity,rs,js,FEMord);
+toc
+%% Step 4 delete one unknown and equation and define preconditioner
+A=A(1:end-1,1:end-1);
+PRECON=sparse(1:numel(A(:,1)),1:numel(A(:,1)),sqrt(full(diag(A))));
+rhs=rhs(1:end-1);
+%% Step 5 solve system of equations
+tic
+x=minres(A,rhs,10^-10,10000,PRECON,PRECON);
+x(end+1)=0;
+toc
+%% Step 6 evaluate field at desired locations
+Efield=FEMinterpolatorks(te2te,te2p2,p2,rs,js,x,ro,FEMord);
+
+
+
+@function [te2p2,p2]=femgenmesh_c(te2p,p,FEMord)
+te2p=te2p-1;
+nte=numel(te2p(1,:));
+np=numel(p(1,:));
+if FEMord==1
+te2p2=te2p;p2=p;
+elseif FEMord==2
+# int ne=generateedge_ct(int nte,int[4,nte] te2p);
+npne=np+ne;
+te2p2=zeros([10,nte]);p2=zeros([3,npne]);
+# generatemesh2nd(int nte,int[4,nte] te2p,double[3,np] p,int np,inout int[10,nte] te2p2,inout double[3,npne] p2);
+elseif FEMord==3
+# int ne=generateedge_ct(int nte,int[4,nte] te2p);
+# int nf=generateface_ct(int nte,int[4,nte] te2p);
+npne=np+2*ne+nf;
+te2p2=zeros([20,nte]);p2=zeros([3,npne]);
+# generatemesh3rd(int nte,int[4,nte] te2p,double[3,np] p,int np,int ne,inout int[20,nte] te2p2,inout double[3,npne] p2);
+end
+
+
+@function A=femassembleTensor(te2p,p,reg,FEMord)
+%generates 1nd order FEM matrix
+nte=numel(te2p(1,:));
+np=numel(p(1,:));
+if FEMord==1
+nte16=16*nte;
+crvindex=zeros([3 nte16]);
+val=zeros([1 nte16]);
+# assemblemattensor(int nte, int np, int[4,nte] te2p, double[3,np] p,double[9,nte] reg,inout int[3,nte16] crvindex,inout double[nte16] val);
+elseif FEMord==2
+nte100=100*nte;
+crvindex=zeros([3 nte100]);
+val=zeros([1 nte100]);
+# assemblemat2ndtensor(int nte, int np, int[10,nte] te2p, double[3,np] p,double[9,nte] reg,inout int[3,nte100] crvindex,inout double[nte100] val);
+elseif FEMord==3
+nte400=400*nte;
+crvindex=zeros([3 nte400]);
+val=zeros([1 nte400]);
+# assemblemat3rdtensor(int nte, int np, int[20,nte] te2p, double[3,np] p,double[9,nte] reg,inout int[3,nte400] crvindex,inout double[nte400] val);
+end
+A=sparse(crvindex(1,:)',crvindex(2,:)',val(:));
+
+
+
+@function A=femassemble(te2p,p,reg,FEMord)
+%generates 1nd order FEM matrix
+nte=numel(te2p(1,:));
+np=numel(p(1,:));
+if FEMord==1
+nte16=16*nte;
+crvindex=zeros([3 nte16]);
+val=zeros([1 nte16]);
+# assemblemat(int nte, int np, int[4,nte] te2p, double[3,np] p,double[nte] reg,inout int[3,nte16] crvindex,inout double[nte16] val);
+elseif FEMord==2
+nte100=100*nte;
+crvindex=zeros([3 nte100]);
+val=zeros([1 nte100]);
+# assemblemat2nd(int nte, int np, int[10,nte] te2p, double[3,np] p,double[nte] reg,inout int[3,nte100] crvindex,inout double[nte100] val);
+elseif FEMord==3
+nte400=400*nte;
+crvindex=zeros([3 nte400]);
+val=zeros([1 nte400]);
+# assemblemat3rd(int nte, int np, int[20,nte] te2p, double[3,np] p,double[nte] reg,inout int[3,nte400] crvindex,inout double[nte400] val);
+end
+A=sparse(crvindex(1,:)',crvindex(2,:)',val(:));
+
+@function [rhs]=femgenrhs(te2p,p,reg,rs,js,FEMord)
+nte=numel(te2p(1,:));
+np=numel(p(1,:));
+nsource=numel(rs(1,:));
+%computes rhs for 1nd order FEM using rs and js as sources and te2p and p as meshes
+%convention is second index is for number of elements. For example, te2p is 4 by nte, and p is 3 by np.
+rhs=zeros([np 1]);
+%internal accuracy parameter
+iprec=10^-4;
+if FEMord==1
+#  rhsfunc(int nte, int np, int[4,nte] te2p, double[3,np] p,double[nte] reg, int nsource, double[3,nsource] rs,double[3,nsource] js,inout double[np] rhs,double iprec);
+elseif FEMord==2
+#  rhsfunc2nd(int nte, int np, int[10,nte] te2p, double[3,np] p,double[nte] reg, int nsource, double[3,nsource] rs,double[3,nsource] js,inout double[np] rhs,double iprec);
+elseif FEMord==3
+#  rhsfunc3rd(int nte, int np, int[20,nte] te2p, double[3,np] p,double[nte] reg, int nsource, double[3,nsource] rs,double[3,nsource] js,inout double[np] rhs,double iprec);
+end
+
+
+@function [rhs]=femgenrhsjsksrho(te2p,p,reg,rs,js,ks,rho,FEMord)
+nte=numel(te2p(1,:));
+np=numel(p(1,:));
+nsource=numel(rs(1,:));
+%computes rhs for 1nd order FEM using rs and js as sources and te2p and p as meshes
+%convention is second index is for number of elements. For example, te2p is 4 by nte, and p is 3 by np.
+rhs=zeros([np 1]);
+%internal accuracy parameter
+iprec=10^-4;
+if FEMord==1
+#  rhsfuncrsjsksrhos(int nte, int np, int[4,nte] te2p, double[3,np] p,double[nte] reg, int nsource, double[3,nsource] rs,double[3,nsource] js,double[3,nsource] ks,double[nsource] rho,inout double[np] rhs,double iprec);
+elseif FEMord==2
+#  rhsfunc2nd(int nte, int np, int[10,nte] te2p, double[3,np] p,double[nte] reg, int nsource, double[3,nsource] rs,double[3,nsource] js,inout double[np] rhs,double iprec);
+elseif FEMord==3
+#  rhsfunc3rd(int nte, int np, int[20,nte] te2p, double[3,np] p,double[nte] reg, int nsource, double[3,nsource] rs,double[3,nsource] js,inout double[np] rhs,double iprec);
+end
+
+
+
+@function [rhs]=femgenrhsks(te2p,p,reg,rs,js,FEMord)
+nte=numel(te2p(1,:));
+np=numel(p(1,:));
+nsource=numel(rs(1,:));
+%computes rhs for 1nd order FEM using rs and js as sources and te2p and p as meshes
+%convention is second index is for number of elements. For example, te2p is 4 by nte, and p is 3 by np.
+rhs=zeros([np 1]);
+%internal accuracy parameter
+iprec=10^-4;
+if FEMord==1
+#  rhsfuncks(int nte, int np, int[4,nte] te2p, double[3,np] p,double[nte] reg, int nsource, double[3,nsource] rs,double[3,nsource] js,inout double[np] rhs,double iprec);
+elseif FEMord==2
+#  rhsfunc2ndks(int nte, int np, int[10,nte] te2p, double[3,np] p,double[nte] reg, int nsource, double[3,nsource] rs,double[3,nsource] js,inout double[np] rhs,double iprec);
+elseif FEMord==3
+#  rhsfunc3rdks(int nte, int np, int[20,nte] te2p, double[3,np] p,double[nte] reg, int nsource, double[3,nsource] rs,double[3,nsource] js,inout double[np] rhs,double iprec);
+end
+rhs=-rhs;
+
+
+
+
+
+@function [rhs]=femgenrhsksTensor(te2p,p,reg,rs,js,FEMord)
+nte=numel(te2p(1,:));
+np=numel(p(1,:));
+nsource=numel(rs(1,:));
+%computes rhs for 1nd order FEM using rs and js as sources and te2p and p as meshes
+%convention is second index is for number of elements. For example, te2p is 4 by nte, and p is 3 by np.
+rhs=zeros([np 1]);
+%internal accuracy parameter
+iprec=10^-4;
+if FEMord==1
+#  rhsfunckstensor(int nte, int np, int[4,nte] te2p, double[3,np] p,double[9,nte] reg, int nsource, double[3,nsource] rs,double[3,nsource] js,inout double[np] rhs,double iprec);
+elseif FEMord==2
+#  rhsfunc2ndks(int nte, int np, int[10,nte] te2p, double[3,np] p,double[nte] reg, int nsource, double[3,nsource] rs,double[3,nsource] js,inout double[np] rhs,double iprec);
+elseif FEMord==3
+#  rhsfunc3rdks(int nte, int np, int[20,nte] te2p, double[3,np] p,double[nte] reg, int nsource, double[3,nsource] rs,double[3,nsource] js,inout double[np] rhs,double iprec);
+end
+rhs=-rhs;
+@function [Eout]=computeEprimary(rs,js,nsource,robs,ntarget)
+%compute Eobs at observation points (mostly for testing C++ to Fortran interface)
+Eout=zeros([3 ntarget]);
+iprecEp=10^-4;%FMM accuracy flag lower is faster but less accurate
+# Eprim(int nsource,int ntarget, double[3,nsource] rs, double[3,nsource] js, double[3,ntarget] robs,inout double[3,ntarget] Eout,double iprecEp);
+
+@function [Eout]=computeEprimaryjsksrho(rs,js,ks,rho,nsource,robs,ntarget)
+%compute Eobs at observation points (mostly for testing C++ to Fortran interface)
+Eout=zeros([3 ntarget]);
+iprecEp=10^-4;%FMM accuracy flag lower is faster but less accurate
+# Eprimrsjsksrho(int nsource,int ntarget, double[3,nsource] rs, double[3,nsource] js, double[3,nsource] ks, double[nsource] rho, double[3,ntarget] robs,inout double[3,ntarget] Eout,double iprecEp);
+
+
+@function [Hout]=computeHprimary(rs,js,nsource,robs,ntarget)
+%compute Eobs at observation points (mostly for testing C++ to Fortran interface)
+Hout=zeros([3 ntarget]);
+iprecEp=10^-4;%FMM accuracy flag lower is faster but less accurate
+# Hprim(int nsource,int ntarget, double[3,nsource] rs, double[3,nsource] js, double[3,ntarget] robs,inout double[3,ntarget] Hout,double iprecEp);
+
+@function [Ephi]=computeEphiprimary(rs,rho,nsource,robs,ntarget)
+%compute Eobs at observation points (mostly for testing C++ to Fortran interface)
+Ephi=zeros([3 ntarget]);
+iprecEp=10^-4;%FMM accuracy flag lower is faster but less accurate
+# Ephiprim(int nsource,int ntarget, double[3,nsource] rs, double[nsource] rho, double[3,ntarget] robs,inout double[3,ntarget] Ephi,double iprecEp);
+
+
+
+@function [Aout,curlAout]=computeAprimary(rs,js,nsource,robs,ntarget)
+%compute Eobs at observation points (mostly for testing C++ to Fortran interface)
+Aout=zeros([3 ntarget]);
+curlAout=zeros([3 ntarget]);
+iprecEp=10^-4;%FMM accuracy flag lower is faster but less accurate
+# Aprim(int nsource,int ntarget, double[3,nsource] rs, double[3,nsource] js, double[3,ntarget] robs,inout double[3,ntarget] Aout,inout double[3,ntarget] curlAout,double iprecEp);
+
+@function [Eout]=FEMinterpolator(te2te,te2p,p,rs,js,xval,robs,FEMord)
+%compute Etotal at observation points robs
+nobs=numel(robs)/3;
+np=numel(p)/3;
+nsource=numel(rs)/3;
+Ep=zeros([3 nobs]);
+iprecEp=10^-4;%FMM accuracy flag lower is faster but less accurate
+# Eprim(int nsource,int nobs, double[3,nsource] rs, double[3,nsource] js, double[3,nobs] robs,inout double[3,nobs] Ep,double iprecEp);
+Eout=zeros([3 nobs]);
+if FEMord==1
+nte=numel(te2p)/4;
+# secondaryEfield(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[4,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+elseif FEMord==2
+nte=numel(te2p)/10;
+# secondaryEfield2nd(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[10,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+elseif FEMord==3
+nte=numel(te2p)/20;
+# secondaryEfield3rd(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[20,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+end
+Eout=Eout+Ep;
+
+
+@function [Eout]=FEMinterpolatorjsksrho(te2te,te2p,p,rs,js,ks,rho,xval,robs,FEMord)
+%compute Etotal at observation points robs
+nobs=numel(robs)/3;
+np=numel(p)/3;
+nsource=numel(rs)/3;
+Ep=zeros([3 nobs]);
+iprecEp=10^-4;%FMM accuracy flag lower is faster but less accurate
+# Eprimrsjsksrho(int nsource,int nobs, double[3,nsource] rs, double[3,nsource] js, double[3,nsource] ks, double[nsource] rho, double[3,nobs] robs,inout double[3,nobs] Ep,double iprecEp);
+Eout=zeros([3 nobs]);
+
+if FEMord==1
+nte=numel(te2p)/4;
+# secondaryEfield(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[4,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+elseif FEMord==2
+nte=numel(te2p)/10;
+# secondaryEfield2nd(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[10,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+elseif FEMord==3
+nte=numel(te2p)/20;
+# secondaryEfield3rd(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[20,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+end
+Eout=Eout+Ep;
+
+
+@function [Eout]=FEMinterpolatorks(te2te,te2p,p,rs,js,xval,robs,FEMord)
+%compute Etotal at observation points robs
+nobs=numel(robs)/3;
+np=numel(p)/3;
+nsource=numel(rs)/3;
+Ep=zeros([3 nobs]);
+iprecEp=10^-4;%FMM accuracy flag lower is faster but less accurate
+# Hprim(int nsource,int nobs, double[3,nsource] rs, double[3,nsource] js, double[3,nobs] robs,inout double[3,nobs] Ep,double iprecEp);
+Ep=-Ep;
+Eout=zeros([3 nobs]);
+if FEMord==1
+nte=numel(te2p)/4;
+# secondaryEfield(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[4,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+elseif FEMord==2
+nte=numel(te2p)/10;
+# secondaryEfield2nd(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[10,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+elseif FEMord==3
+nte=numel(te2p)/20;
+# secondaryEfield3rd(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[20,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+end
+Eout=Eout+Ep;
+
+
+@function [Eout]=FEMinterpolatorc(te2te,te2p,p,rs,js,xval,robs,FEMord)
+%compute Etotal at observation points robs
+nobs=numel(robs)/3;
+np=numel(p)/3;
+nsource=numel(rs)/3;
+Ep=zeros([3 nobs]);
+iprecEp=10^-4;%FMM accuracy flag lower is faster but less accurate
+# Eprim(int nsource,int nobs, double[3,nsource] rs, double[3,nsource] js, double[3,nobs] robs,inout double[3,nobs] Ep,double iprecEp);
+Eout=zeros([3 nobs]);
+if FEMord==1
+nte=numel(te2p)/4;
+# secondaryEfieldc(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[4,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+elseif FEMord==2
+nte=numel(te2p)/10;
+# secondaryEfield2ndc(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[10,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+elseif FEMord==3
+nte=numel(te2p)/20;
+# secondaryEfield3rdc(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[20,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+end
+Eout=Eout+Ep;
+
+@function [Eout]=FEMinterpolatorksc(te2te,te2p,p,rs,js,xval,robs,FEMord)
+%compute Etotal at observation points robs
+nobs=numel(robs)/3;
+np=numel(p)/3;
+nsource=numel(rs)/3;
+Ep=zeros([3 nobs]);
+iprecEp=10^-4;%FMM accuracy flag lower is faster but less accurate
+# Hprim(int nsource,int nobs, double[3,nsource] rs, double[3,nsource] js, double[3,nobs] robs,inout double[3,nobs] Ep,double iprecEp);
+Ep=-Ep;
+Eout=zeros([3 nobs]);
+if FEMord==1
+nte=numel(te2p)/4;
+# secondaryEfieldc(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[4,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+elseif FEMord==2
+nte=numel(te2p)/10;
+# secondaryEfield2ndc(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[10,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+elseif FEMord==3
+nte=numel(te2p)/20;
+# secondaryEfield3rdc(double[3,nobs] robs,int nobs,int[4,nte] te2te,int[20,nte] te2p,int nte,double[3,np] p,double[np] xval,inout double[3,nobs] Eout,double iprecEp);
+end
+Eout=Eout+Ep;
+
+
+@function [teid,bari]=pointlocation_c(robs,te2p,p,te2te,te_stride)
+%compute Eobs at observation points (mostly for testing C++ to Fortran interface)
+nobs=numel(robs)/3;
+np=numel(p)/3;
+nte=numel(te2p)/te_stride;
+bari=zeros([4,nobs]);
+teid=zeros([nobs,1]);
+# pointLocation_f(double[3,nobs] robs,int nobs,int[te_stride,nte] te2p,int nte,double[3,np] p,int te_stride,int[4,nte] te2te,inout int[nobs] teid,inout double[4,nobs] bari);
+teid=teid+1;
+
+@function [te2te]=gente2te(te2p)
+%compute Eobs at observation points (mostly for testing C++ to Fortran interface)
+te2p=te2p-1;
+nte=numel(te2p)/4;
+te2te=-ones([4,nte]);
+# generatetetrapaths(int nte,int[4,nte] te2p,inout int[4,nte] te2te);

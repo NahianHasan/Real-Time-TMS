@@ -1,0 +1,13 @@
+offline_cluster_name,'ljgomez'
+offline_stage_1_cpu,16
+offline_stage_2_cpu,12
+offline_stage_3_cpu,32
+offline_stage_4_cpu,12
+offline_stage_1_max_walltime,4:00:00
+offline_stage_2_max_walltime,2:00:00
+offline_stage_3_max_walltime,4:00:00
+offline_stage_4_max_walltime,4:00:00
+matlab_module_version,'matlab/R2022a'
+gt_cluster_name,'standby'
+gt_cpu,4
+gt_walltime,4:00:00

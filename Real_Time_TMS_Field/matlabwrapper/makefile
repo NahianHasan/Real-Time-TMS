@@ -1,0 +1,133 @@
+#HOST=linux
+#HOST=macosx
+####computer information
+HOST=linux
+###############code specific information
+Mlibrary=FEM
+MWFILE=demo.mw
+OBJDIR= ../obj/
+MATLABDIR=../matlab/
+vpath %.cc  ../src
+vpath %.f ../contrib/fmmfiles/Laplace
+vpath %.f ../contrib/fmmfiles/Common
+vpath %.f90 ../src
+
+ifeq ($(HOST),linux)
+MWRAP = ../contrib/mwrap/mwrap
+MEX = /apps/spack/bell/apps/matlab/R2022a-gcc-4.8.5-4cgsbzu/bin/mex
+CC =gcc
+CPP=gcc
+FC =gfortran
+CFLAGS = -g -O3 --openmp -fPIC -fexceptions -static  -lstdc++
+FFLAGS = -g -O3 --openmp -fPIC -fexceptions -static  -lstdc++
+F90FLAGS = -g -O3 --openmp -fPIC -fexceptions -static  -lstdc++
+MEXEXT=mexa64
+MEXLINK=-output $(MATLABDIR)$(Mlibrary).$(MEXEXT)
+MEXFLAGS= -largeArrayDims -lgfortran -lquadmath -lm -lgomp
+MFLAGS =  -mex  -c99complex
+OBJSUF=o
+else
+ifeq ($(HOST),windows)
+MWRAP = ../mwrap/mwrap
+MEX = /mnt/c/'Program Files'/Matlab/R2021b/bin
+
+outname=
+TESTC99COMPLEX=test_c99_complex
+CC=x86_64-w64-mingw32-gcc -g -O3 -shared -fexceptions
+CPP=x86_64-w64-mingw32-gcc -g -O3 -shared -fexceptions 
+FC =x86_64-w64-mingw32-gfortran -g -O3 -shared -fexceptions
+#/opt/mingw64/bin/x86_64
+CFLAGS = --openmp
+FFLAGS = --openmp
+F90FLAGS =  --openmp -fdec
+MEX = $(CPP)
+MEXEXT=mexw64
+MEXLINK=-o $(MATLABDIR)$(Mlibrary).$(MEXEXT)
+source=/mnt/c/'Program Files'/Matlab/R2021b/bin/win64/
+includedir=-I/mnt/c/'Program Files'/Matlab/R2021b/extern/include
+MEXFLAGS= $(includedir) $(source)libmex.dll $(source)libmat.dll $(source)libmx.dll   -lm /usr/lib/gcc/x86_64-w64-mingw32/9.3-win32/libgfortran.dll.a -static --openmp  -lpthread -Wl,--no-undefined
+MFLAGS = -mex -c99complex
+OBJSUF=o
+MODSUF=mod
+else
+ifeq ($(HOST),macOS)
+###############fill me later
+MWRAP = ../mwrap/mwrap
+TESTC99COMPLEX=test_c99_complex
+outname=-output
+CC = gcc
+CPP =gcc
+FC = gfortran
+LIBDIRC=
+CFLAGS = -g -O3  -fPIC $(LIBDIRC)
+FFLAGS = -g -O3 --openmp  -fPIC  -fallow-argument-mismatch
+F90FLAGS = -g -O3 --openmp -fPIC
+MEX = /Applications/MATLAB_R2020a.app/bin/mex $(OOFLAG) CC=gcc  LD=gcc
+MEX_FC=   $(FC)
+MEX_CC=   $(CXX)
+MEXEXT=mexmaci64
+source=../matlab/
+MEXFLAGS= -largeArrayDims  -lm -lgfortran -lgomp -L/usr/local/Cellar/gcc/12.2.0/lib/gcc/current/  $(LIBDIRC)
+MFLAGS = -c99complex -mex  -list
+OBJSUF=o
+MEXLINK=-output $(MATLABDIR)$(Mlibrary).$(MEXEXT)
+MATLABROOT=/Applications/MATLAB_R2020a.app/
+endif
+endif
+endif
+
+SOURCESF90=fmmutils_f.f90
+SOURCESCC=femrhs.cc femrhsks.cc femrhsrsjsksrho.cc femrhsrecipADM.cc  femrhsks_tensor.cc Eprim.cc assemble.cc assemble_tensor.cc postproc.cc geom_tools.cc genvolcurrs.cc genvolcurrs_tensor.cc femrhsrecip.cc
+
+
+
+######### External FMM library from NYU
+# Common objects
+COMOBJS = besseljs3d.f cdjseval3d.f dfft.f \
+	fmmcommon.f legeexps.f prini.f \
+	rotgen.f rotproj.f rotviarecur.f \
+	tree_lr_3d.f yrecursion.f
+# Laplace objects
+LOBJS = lwtsexp_sep1.f l3dterms.f l3dtrans.f \
+		laprouts3d.f lfmm3d.f lfmm3dwrap.f \
+		lfmm3dwrap_legacy.f lfmm3dwrap_vec.f lwtsexp_sep2.f \
+		lpwrouts.f lapkernels.f
+
+LFMMLIB=$(COMOBJS) $(LOBJS)
+OBJS=$(LFMMLIB:.f=.$(OBJSUF))
+OBJS+=$(SOURCESC:.c=.$(OBJSUF))
+OBJS+=$(SOURCESF90:.f90=.$(OBJSUF))
+OBJS+=$(SOURCESCC:.cc=.$(OBJSUF))
+LINKOBJS=$(addprefix $(OBJDIR),$(OBJS))
+
+default: mexfile
+
+####### Recipe for each extension (old school format)
+%.$(OBJSUF) : %.f
+	$(FC) $(FFLAGS) -static  -lstdc++ -c   $^  -o $(OBJDIR)$@
+%.$(OBJSUF) : %.f90
+	$(FC) $(FFLAGS) -static  -c $^  -o $(OBJDIR)$@
+%.$(OBJSUF) : %.c
+	$(CC) $(CFLAGS) -static  -lstdc++ -c $^  -o $(OBJDIR)$@
+%.$(OBJSUF) : %.cc
+	$(CC) $(CFLAGS) -static   -lstdc++ -c $^ -o $(OBJDIR)$@
+
+
+# Tell mwrap to make the interface and the name of the final MEX file:
+# (note -mb here makes separate .m file for each @ function in the .mw)
+$(MLibary).c: demo.mw
+	$(MWRAP) $(MFLAGS)  -mex $(Mlibrary) -mb $(MWFILE)
+	mv *.m  $(MATLABDIR)
+	$(MWRAP)  -mex $(MATLABDIR)$(Mlibrary) -c $(MATLABDIR)$(Mlibrary).c $(MWFILE)
+# How to make MATLAB/MEX compile the interface (whatever libs needed):
+mexfile:  $(OBJS)  #$(MLibary).c
+	$(MEX)  $(MEXLINK) $(MATLABDIR)$(Mlibrary).c  $(LINKOBJS) $(MEXFLAGS)
+#	install_name_tool -change /usr/local/opt/gcc/lib/gcc/current/libgcc_s.1.dylib  @loader_path/maclibs/libgcc_s.1.dylib  FEM.mexmaci64#
+#	install_name_tool -change /usr/lib/libSystem.B.dylib  @loader_path/maclibs/libSystem.B.dylib  FEM.mexmaci64
+#	install_name_tool -change /usr/lib/libc++.1.dylib  @loader_path/maclibs/libc++.1.dylib   FEM.mexmaci64
+#	install_name_tool -change /usr/local/opt/gcc/lib/gcc/current/libgfortran.5.dylib  @loader_path/maclibs/libgfortran.5.dylib   FEM.mexmaci64
+#	install_name_tool -change /usr/local/opt/gcc/lib/gcc/current/libgomp.1.dylib @loader_path/maclibs/libgomp.1.dylib   FEM.mexmaci64
+
+# Remove the MEX interface, MATLAB caller(s), and MEX file:
+cleanall:
+	rm -f $(MATLABDIR)femsolver.m *.mod $(MATLABDIR)$(Mlibrary).c $(OBJDIR)$(OBJS) $(MATLABDIR)*.mex* *~
