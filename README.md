@@ -62,13 +62,12 @@ If you are benefited by this repository or the research, please cite the work as
 ```
 [Subject Folder]
 └── FEM_[FEM Order]
-    ├── Error_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
-    ├── Memory_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
-    ├── Set_up_Time_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
-    ├── Timing_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
-    ├── Memory_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
-    ├── grid_fields_[Grid Spacing]_[Coil Model].mat
-    ├── GT_E_Fields_[Coil Model]
+    ├── Error_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat---(Error results)
+    ├── Memory_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat--(memory requirements)
+    ├── Set_up_Time_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat--(set-up time results)
+    ├── Timing_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat--(timing results)
+    ├── grid_fields_[Grid Spacing]_[Coil Model].mat--(primary fields in the grid)
+    ├── GT_E_Fields_[Coil Model]--(ground-truth fields solved by FEM)
     │   ├── E_org_1.mat
     │   ├── E_org_2.mat
     │   ├── E_org_3.mat
@@ -76,7 +75,7 @@ If you are benefited by this repository or the research, please cite the work as
     │   ├── ...
     │   ├── ...
     │   └── E_org_1000.mat
-    ├── Modes_[# Modes]
+    ├── Modes_[# Modes]--(E-field modes and surface curretn modes)
     │   ├── Ax_1.mat
     │   ├── Ax_2.mat
     │   ├── Ax_3.mat
@@ -92,7 +91,7 @@ If you are benefited by this repository or the research, please cite the work as
     │   ├── ...
     │   ├── ...
     │   └── Q_[# Modes].mat
-    ├── Random_Coil_Placement_IDs_[Coil Model].mat
+    ├── Random_Coil_Placement_IDs_[Coil Model].mat--(random coil placement informations used to generate GT data)
 ```
 
 
