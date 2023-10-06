@@ -17,7 +17,7 @@ If you are benefited by this repository or the research, please cite the work as
 ## Data Structures and Shape
 | data structure | Description | shape or fields
 | --- | --- | --- |
-| msh file | head model information either in .msh or .mat format | nodes = $N_d &times 3$ <br /> triangles = N<sub>t</sub> &times 3 <br /> triangle_regions = N<sub>t</sub> &times 1 <br /> tetrahedra = N<sub>tet</sub> &times 4 <br /> tetrahedron_regions = N<sub>tet</sub> &times 1|
+| msh file | head model information either in .msh or .mat format | nodes = $N_d &times 3$ <br /> triangles = $N_t\times 3$ <br /> triangle_regions = $N_t\times 1$ <br /> tetrahedra = $N_{tet}\times 4$ <br /> tetrahedron_regions = $N_{tet}\times 1$ |
 | coil model file | TMS coil model | rcoil = N<sub>c</sub>&times 3 <br /> jcoil = N<sub>c</sub>&times 3 <br />, If you have your own coil model file, change the function load_coil_model.m. The initial version of this page supports only electric dipole mmodel of the coil. |
 | cluster parameters | specify cluster information for parallel run | see cluster_parameters.csv. Do not change the order of the parameters. |
 | m2m folder | head model segmentation data generated while using mri2mesh or headreco tool from SimNIBS | see [SimNIBS](https://simnibs.github.io/simnibs/build/html/index.html). For this software, we used SimNIBS 3.2. |
