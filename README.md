@@ -62,7 +62,7 @@ If you are benefited by this repository or the research, please cite the work as
 ```
 [Subject Folder]
 └── FEM_[FEM Order]
-    ├── Error_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
+    ├── Error_grid_${\color{red}[Grid Spacing]}$_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
     ├── Memory_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
     ├── Set_up_Time_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
     ├── Timing_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
