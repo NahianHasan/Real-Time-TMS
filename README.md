@@ -37,7 +37,7 @@ If you are benefited by this repository or the research, please cite the work as
 | Example_Scripts | Contains example scripts to run the real-time TMS. |
 | Real_Time_TMS_Fiels | Contains the source code. |
 | Data | Contains example data. |
-| solutions | Contains example modes and example solutions of the ernie head model from SimNIBS. |
+| [Output_Folder] | Contains modes and other output data. |
 
 
 ## Steps to run the real-time TMS
