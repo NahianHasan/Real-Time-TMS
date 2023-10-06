@@ -76,21 +76,21 @@ If you are benefited by this repository or the research, please cite the work as
     │   ├── ...
     │   └── E_org_1000.mat
     ├── Modes_[# Modes]-------------------------------------------------------------------(E-field modes and surface curretn modes)
-    │   ├── Ax_1.mat
-    │   ├── Ax_2.mat
-    │   ├── Ax_3.mat
-    │   ├── ...
-    │   ├── ...
-    │   ├── ...
-    │   ├── Ax_[# Modes].mat
+    │   ├── Ax_1.mat────────────────────|
+    │   ├── Ax_2.mat			  |
+    │   ├── Ax_3.mat			  |
+    │   ├── ...			  |------------------------------------------------(Surface Current Modes)
+    │   ├── ...			  |
+    │   ├── ...			  |
+    │   ├── Ax_[# Modes].mat<───────────|
     │   ├── [Subject Folder]_FEM_[FEM Order].mat------------------------------------------(Subject specific msh data)
-    │   ├── Q_1.mat
-    │   ├── Q_2.mat
-    │   ├── Q_3.mat
-    │   ├── ...
-    │   ├── ...
-    │   ├── ...
-    │   └── Q_[# Modes].mat
+    │   ├── Q_1.mat─────────────────────|
+    │   ├── Q_2.mat			  |
+    │   ├── Q_3.mat			  |
+    │   ├── ...			  |------------------------------------------------(E-field Modes)
+    │   ├── ...			  |
+    │   ├── ...			  |
+    │   └── Q_[# Modes].mat─────────────|
     ├── Random_Coil_Placement_IDs_[Coil Model].mat----------------------------------------(random coil placement informations used to generate GT data)
 ```
 
