@@ -25,7 +25,7 @@ If you are benefited by this repository or the research, please cite the work as
 
 ## Folders
 | Folder | Description |
-| --- | --- | --- |
+| --- | --- |
 | Coil_Models | TMS coil models (the current version works for only electric dipoles). |
 | Example_Scripts | Contains example scripts to run the real-time TMS. |
 | Real_Time_TMS_Fiels | Contains the source code. |
