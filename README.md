@@ -58,6 +58,63 @@ If you are benefited by this repository or the research, please cite the work as
 | cluster_parameters.csv | Example_Scripts | A csv file for specifying the cluster parameters. useful for generating the modes in parallel or generating the ground truth data in parallel. It only supports systems with slurm.
 
 
+## Output Folder Structure
+formatTreeString(
+  [
+    {
+      text: 'first',
+      extra: 'extra'
+    },
+    {
+      text: 'second',
+      extra: 'another'
+    },
+    {
+      text: 'third',
+      children: [
+        {
+          text: 'fourth',
+          extra: 'yet'
+        },
+        {
+          text: 'fifth'
+        },
+        {
+          text: 'sixth',
+          extra: 'another',
+          children: [
+            {
+              text: 'seventh',
+              extra: 'one'
+            },
+            {
+              text: 'eighth',
+              extra: 'look',
+              children: [
+                {
+                  text: 'ninth',
+                  extra: 'another'
+                },
+                {
+                  text: 'tenth',
+                  extra: 'one'
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      text: 'eleventh',
+      extra: 'yay'
+    }
+  ],
+  {
+    guideFormat: chalk.dim
+  }
+)
+
 
 ## Core Functionalities (mode generation stage)
 | Function | Containing Folder | Description
