@@ -59,61 +59,43 @@ If you are benefited by this repository or the research, please cite the work as
 
 
 ## Output Folder Structure
-formatTreeString(
-  [
-    {
-      text: 'first',
-      extra: 'extra'
-    },
-    {
-      text: 'second',
-      extra: 'another'
-    },
-    {
-      text: 'third',
-      children: [
-        {
-          text: 'fourth',
-          extra: 'yet'
-        },
-        {
-          text: 'fifth'
-        },
-        {
-          text: 'sixth',
-          extra: 'another',
-          children: [
-            {
-              text: 'seventh',
-              extra: 'one'
-            },
-            {
-              text: 'eighth',
-              extra: 'look',
-              children: [
-                {
-                  text: 'ninth',
-                  extra: 'another'
-                },
-                {
-                  text: 'tenth',
-                  extra: 'one'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      text: 'eleventh',
-      extra: 'yay'
-    }
-  ],
-  {
-    guideFormat: chalk.dim
-  }
-)
+[Subject Folder]
+\u2514\u2500\u2500 FEM_[FEM Order]
+    \u251c\u2500\u2500 Error_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
+    \u251c\u2500\u2500 Memory_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
+    \u251c\u2500\u2500 Set_up_Time_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
+    \u251c\u2500\u2500 Timing_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
+    \u251c\u2500\u2500 Memory_grid_[Grid Spacing]_Modes_[# Modes]_coil_[Coil Model]_[Hardware].mat
+    \u251c\u2500\u2500 grid_fields_[Grid Spacing]_[Coil Model].mat
+    \u251c\u2500\u2500 GT_E_Fields_[Coil Model]
+    \u2502   \u251c\u2500\u2500 E_org_1.mat
+    \u2502   \u251c\u2500\u2500 E_org_2.mat
+    \u2502   \u251c\u2500\u2500 E_org_3.mat
+    \u2502   \u251c\u2500\u2500 ...
+    \u2502   \u251c\u2500\u2500 ...
+    \u2502   \u251c\u2500\u2500 ...
+    \u2502   \u2514\u2500\u2500 E_org_1000.mat
+    \u251c\u2500\u2500 Modes_[# Modes]
+    \u2502   \u251c\u2500\u2500 Ax_1.mat
+    \u2502   \u251c\u2500\u2500 Ax_2.mat
+    \u2502   \u251c\u2500\u2500 Ax_3.mat
+    \u2502   \u251c\u2500\u2500 ...
+    \u2502   \u251c\u2500\u2500 ...
+    \u2502   \u251c\u2500\u2500 ...
+    \u2502   \u251c\u2500\u2500 Ax_[# Modes].mat
+    \u2502   \u251c\u2500\u2500 [Subject Folder]_FEM_[FEM Order].mat
+    \u2502   \u251c\u2500\u2500 Q_1.mat
+    \u2502   \u251c\u2500\u2500 Q_2.mat
+    \u2502   \u251c\u2500\u2500 Q_3.mat
+    \u2502   \u251c\u2500\u2500 ...
+    \u2502   \u251c\u2500\u2500 ...
+    \u2502   \u251c\u2500\u2500 ...
+    \u2502   \u2514\u2500\u2500 Q_[# Modes].mat
+    \u251c\u2500\u2500 Random_Coil_Placement_IDs_[Coil Model].mat
+
+
+
+
 
 
 ## Core Functionalities (mode generation stage)
