@@ -4,11 +4,11 @@ Transcranial Magnetic Stimulation (TMS) coil placement and pulse waveform curren
 ## Authors
 | Author | Affiliation | Email |
 | --- | --- | --- |
-| Nahian I. Hasan | Elmore Family School of Electrical and Computer Engineering | nahianhasan1994@gmail.com |
+| Nahian I. Hasan | Elmore Family School of Electrical and Computer Engineering, Purdue University, WL, USA | nahianhasan1994@gmail.com |
 | Moritz Dannhauer | Computational Neurostimulation Research Program, Noninvasive Neuromodulation Unit, Experimental Therapeutics & Pathophysiology Branch, National Institute of Mental Health Intramural Research Program, National Institutes of Health | moritz.dannhauer@nih.gov |
-| Dezhi Wang | Elmore Family School of Electrical and Computer Engineering | wang5355@purdue.edu |
+| Dezhi Wang | Elmore Family School of Electrical and Computer Engineering, Purdue University, WL, USA | wang5355@purdue.edu |
 | Zhi-De Deng | Computational Neurostimulation Research Program, Noninvasive Neuromodulation Unit, Experimental Therapeutics & Pathophysiology Branch, National Institute of Mental Health Intramural Research Program, National Institutes of Health | zhi-de.deng@nih.gov |
-| Luis J. Gomez | Elmore Family School of Electrical and Computer Engineering | ljgomez@purdue.edu |
+| Luis J. Gomez | Elmore Family School of Electrical and Computer Engineering, Purdue University, WL, USA | ljgomez@purdue.edu |
 
 ## License
 This repository is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
