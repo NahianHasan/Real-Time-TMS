@@ -83,7 +83,7 @@ If you are benefited by this repository or the research, please cite the work as
     │   ├── ...
     │   ├── ...
     │   ├── Ax_[# Modes].mat
-    │   ├── [Subject Folder]_FEM_[FEM Order].mat
+    │   ├── [Subject Folder]_FEM_[FEM Order].mat------------------------------------------(Subject specific msh data)
     │   ├── Q_1.mat
     │   ├── Q_2.mat
     │   ├── Q_3.mat
