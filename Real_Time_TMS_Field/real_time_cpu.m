@@ -1,4 +1,4 @@
-function [Efield_cpu,Tm] = real_time_cpu(Q,Ax,X,Y,Z,huygens_surf_points,interp_method,Exv,Eyv,Ezv,Hxv,Hyv,Hzv,Transformation,NModes)
+function [Efield,Tm] = real_time_cpu(Q,Ax,X,Y,Z,huygens_surf_points,interp_method,Exv,Eyv,Ezv,Hxv,Hyv,Hzv,Transformation,NModes)
     start_t = tic();
     huygens_surf_points_rot = Transformation(:,:)\huygens_surf_points;
     time_1 = toc(start_t);
@@ -18,7 +18,7 @@ function [Efield_cpu,Tm] = real_time_cpu(Q,Ax,X,Y,Z,huygens_surf_points,interp_m
         coeff_cpu(i)=reshape(curr,1,[])*Fields;
     end
     time_3 = toc(start_t);
-    Efield_cpu=Q*coeff_cpu;
+    Efield=Q*coeff_cpu;
     time_4 = toc(start_t);                
     Tm = [time_1,time_2,time_3,time_4];
 end

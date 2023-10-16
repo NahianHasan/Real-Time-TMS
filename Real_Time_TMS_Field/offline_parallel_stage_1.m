@@ -20,7 +20,7 @@ function [] = offline_parallel_stage_1(NModes,msh_file,msh_file_read_fcn,FEMORD,
     %select the observation points as centers of ROI tetrahedra
     ro = (p(:,te2p(1,teid))+p(:,te2p(2,teid))+p(:,te2p(3,teid))+p(:,te2p(4,teid)))'./4;
     %Generate the Huygens Surface Points
-    [rs,nhat,tri_hg,extruded_scalp_points,area_tri]=generateextrudedmesh(p,te2p);
+    [rs,nhat,extruded_scalp_points,surf_point_ind,area_tri]=generateextrudedmesh(p,te2p);
     %Generate random mode weight matrix for the basis fields
     Wn=randn([numel(rs) NModes]);
     %calculate the volume of tetrahedrons
@@ -30,6 +30,6 @@ function [] = offline_parallel_stage_1(NModes,msh_file,msh_file_read_fcn,FEMORD,
     volume = volume(teid);
 
     Time_1 = toc(start_time);
-    save(fullfile(output_folder,['FEM_',num2str(FEMORD)],['Modes_',num2str(NModes)],[subject_folder,'_FEM_',num2str(FEMORD),'.mat']),'Time_1','te2p','scalp_tri','scalp_points','teid','p','reg','conductivity','NModes','FEMORD','ro','rs','nhat','area_tri','tri_hg','extruded_scalp_points','Wn','volume','-v7.3');
+    save(fullfile(output_folder,['FEM_',num2str(FEMORD)],['Modes_',num2str(NModes)],[subject_folder,'_FEM_',num2str(FEMORD),'.mat']),'Time_1','te2p','scalp_tri','scalp_points','teid','p','reg','conductivity','NModes','FEMORD','ro','rs','nhat','area_tri','extruded_scalp_points','surf_point_ind','Wn','volume','-v7.3');
 end
 

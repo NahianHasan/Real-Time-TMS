@@ -1,4 +1,6 @@
-function [Q,Ax,params] = real_time_stage_setup(msh_file,msh_file_read_fcn,real_time_code_path,NModes,m2m_dir,FEMORD,grid_spacing,mapping_surface,output_folder,subject_folder,coil_model_file)
+function [Q,Ax,params] = real_time_stage_setup(msh_file,msh_file_read_fcn,real_time_code_path,...
+        NModes,m2m_dir,FEMORD,grid_spacing,mapping_surface,output_folder,...
+                        subject_folder,coil_model_file)
     start_t = tic();
     if exist(fullfile(m2m_dir,'mri2mesh_log.html'),'file')
         model_creation_tool = 'mri2mesh';
@@ -32,24 +34,8 @@ function [Q,Ax,params] = real_time_stage_setup(msh_file,msh_file_read_fcn,real_t
 
     %%%%%%%%%% Find the mapping surface tetra IDs %%%%%%%%%%%%%%%%%%%%
     G1 = matfile(fullfile(output_folder,['FEM_',num2str(FEMORD)],['Modes_',num2str(NModes)],[subject_folder,'_FEM_',num2str(FEMORD),'.mat']));
-    p = G1.p;te2p=G1.te2p;rs = G1.rs;
-    conductivity = G1.conductivity;teid=G1.teid;
-    if strcmp(mapping_surface, 'GM')% GM/WM surface
-        xx = [];
-        xx(conductivity==.1260)=1; % White
-        xx(conductivity==.2750)=1; % Grey
-        [~,GM_teid]=surftri(p',te2p(:,xx(:)==1)'); % GM/WM surface
-        %[GM_tri,GM_teid]=surftri(p',te2p(:,conductivity==0.2750)'); 
-    elseif strcmp(mapping_surface, 'GMM')% GM middle surface
-        [~,GM_msh] = load_GM_mid_Layer(m2m_dir,model_creation_tool);
-        v1 = GM_msh.nodes(GM_msh.triangles(:,2),:)-GM_msh.nodes(GM_msh.triangles(:,1),:);
-        v2 = GM_msh.nodes(GM_msh.triangles(:,3),:)-GM_msh.nodes(GM_msh.triangles(:,1),:);
-        SA = sum(0.5*vecnorm(cross(v1,v2),2,2),'all')/1E6;
-        warning('off');TR = triangulation(te2p(:,teid)',p');warning('on')
-        GM_teid = pointLocation(TR,GM_msh.nodes/1000);
-        GM_teid(isnan(GM_teid)) = 1;
-        clear TR
-    end
+    rs = G1.rs;
+    [GM_teid,GM_msh] = get_mapping_surface(msh_file,msh_file_read_fcn,mapping_surface,m2m_dir,model_creation_tool);
     %%%%%%%%%% Load offline modes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Q = zeros(3*numel(GM_teid),NModes);
     disp('Loading Mode Functions');
@@ -106,7 +92,9 @@ function [Q,Ax,params] = real_time_stage_setup(msh_file,msh_file_read_fcn,real_t
     SHy = single(zeros(size(huygens_surf_points_rot_x,2),1));
     SHz = single(zeros(size(huygens_surf_points_rot_x,2),1));
     Q = single(Q(:,1:NModes));
+    hardware = 'cpu';
     if gpu_solution
+        hardware = 'gpu';
         %dynamically define how many sub arrays you need for efficient GPU
         %computation. We consider 120,000*100 to be the maximum size of a
         %sub_matrix Axi
@@ -115,18 +103,18 @@ function [Q,Ax,params] = real_time_stage_setup(msh_file,msh_file_read_fcn,real_t
         gx = floor(k/Nh);
         Ax = {};
         Fields = {};
-        coeff_g = {};
+        coeff = {};
         count = 1;
         ix = 1;
         while(1)
             if (count+gx-1) <= NModes
                 Ax{ix} = single(Ax_temp(1:6,:,count:count+gx-1));
                 Fields{ix} = single(zeros(6,size(huygens_surf_points_rot_x,2),gx));
-                coeff_g{ix} = single(zeros(gx,1));
+                coeff{ix} = single(zeros(gx,1));
             else
                 Ax{ix} = single(Ax_temp(1:6,:,count:NModes));
                 Fields{ix} = single(zeros(6,size(huygens_surf_points_rot_x,2),NModes-count+1));
-                coeff_g{ix} = single(zeros(NModes-count+1,1));
+                coeff{ix} = single(zeros(NModes-count+1,1));
             end
             count = count + gx;
             ix = ix+1;
@@ -137,11 +125,11 @@ function [Q,Ax,params] = real_time_stage_setup(msh_file,msh_file_read_fcn,real_t
     else
         Ax = Ax_temp;
         Fields = {};
-        coeff_g = {};
+        coeff = {};
     end
     clear Ax_temp;
     Fields_temp = single(zeros(6,size(huygens_surf_points_rot_x,2)));
-    Efield_gpu = single(zeros(size(Q,1),1));
+    Efield = single(zeros(size(Q,1),1));
     data_set_up_time = toc(start_t);
     if gpu_solution
         start_t = tic();
@@ -155,8 +143,8 @@ function [Q,Ax,params] = real_time_stage_setup(msh_file,msh_file_read_fcn,real_t
         Hyv = gpuArray(Hyv);
         Hzv = gpuArray(Hzv);
         NModes = gpuArray(NModes);
-        for ix=1:length(coeff_g)
-            coeff_g{ix} = gpuArray(coeff_g{ix});
+        for ix=1:length(coeff)
+            coeff{ix} = gpuArray(coeff{ix});
         end
         Tr = gpuArray(Tr);
         Tri = gpuArray(Tri);
@@ -173,14 +161,14 @@ function [Q,Ax,params] = real_time_stage_setup(msh_file,msh_file_read_fcn,real_t
         SHx = gpuArray(SHz);
         
         Q = gpuArray(Q);
-        for ix=1:length(coeff_g)
+        for ix=1:length(coeff)
             Ax{ix} = gpuArray(Ax{ix});
         end
         Fields_temp = gpuArray(Fields_temp);
-        for ix=1:length(coeff_g)
+        for ix=1:length(coeff)
             Fields{ix} = gpuArray(Fields{ix});
         end
-        Efield_gpu = gpuArray(Efield_gpu);
+        Efield = gpuArray(Efield);
         communication_time = toc(start_t);
     else
         communication_time = 0;
@@ -209,8 +197,8 @@ function [Q,Ax,params] = real_time_stage_setup(msh_file,msh_file_read_fcn,real_t
     params{20} = Hxv;
     params{21} = Hyv;
     params{22} = Hzv;
-    params{23} = coeff_g;
-    params{24} = Efield_gpu;
+    params{23} = coeff;
+    params{24} = Efield;
     params{25} = Tr;
     params{26} = Tri;
     params{27} = GM_teid;
@@ -221,6 +209,7 @@ function [Q,Ax,params] = real_time_stage_setup(msh_file,msh_file_read_fcn,real_t
     params{32} = data_set_up_time;
     params{33} = communication_time;
     params{34} = coil_model;
+    params{35} = hardware;
     %a dummy call to the gpu functions for initializing it
     [~] = real_time_field_calculation_single_placements(Q,Ax,params,rand([4,4]));
 end

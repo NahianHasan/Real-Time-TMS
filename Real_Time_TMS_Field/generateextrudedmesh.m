@@ -1,9 +1,9 @@
-function [rs,nhat,tri,pp,area_tri]=generateextrudedmesh(p,te2p)
+function [rs,nhat,pp,surf_point_ind,area_tri]=generateextrudedmesh(p,te2p)
     %%%%%%%%generate extruded surface mesh and define inward pointing normals
     [tri,~]=surftri(p',te2p');
-    [pp,~,tri]=unique(tri(:));
+    [surf_point_ind,~,tri]=unique(tri(:));
     tri=reshape(tri,[numel(tri)/3 3]);
-    pp=p(:,pp)';
+    pp=p(:,surf_point_ind)';
     v1=pp(tri(:,2),:)-pp(tri(:,1),:);
     v2=pp(tri(:,3),:)-pp(tri(:,1),:);
     nhat=cross(v1,v2,2);

@@ -1,4 +1,4 @@
-function [p,te2p,conductivity,reg] = load_msh_data(msh_file,varargin)
+function [p,te2p,conductivity,reg,M] = load_msh_data(msh_file,varargin)
     if strcmpi(msh_file(end-2:end),'mat')
         M = load(msh_file);
     elseif strcmpi(msh_file(end-2:end),'msh')
@@ -22,4 +22,9 @@ function [p,te2p,conductivity,reg] = load_msh_data(msh_file,varargin)
     conductivity(conductivity==8) = 0.025;
     conductivity(conductivity==9) = 0.6;
     conductivity(conductivity==10) = 0.16;
+    
+    M.nodes = p';
+    M.conductivity = conductivity;
+    M.scalp_tri = surftri(p',te2p');%select scalp triangular facets
+    M.original_msh_nodes = p';
 end

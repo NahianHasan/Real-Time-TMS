@@ -23,13 +23,12 @@ function [] = offline_parallel_stage_3(NModes,FEMORD,output_folder)
         volume = repmat(sqrt(volume),3,1);
         volume = reshape(volume,[],1);
         %Load the initially calculated modes
-        Time_2 = 0;
+        Time_2e = [];
         for i=1:NModes
             disp(['Reading Modess = ',num2str(i),'/',num2str(NModes)]);
             Q(:,i) = (load(fullfile(output_folder,['FEM_',num2str(FEMORD)],['Modes_',num2str(NModes)],['coil2roi_',num2str(i),'.mat'])).Efield(:)).*volume;
-            Time_2 = Time_2 + load(fullfile(output_folder,['FEM_',num2str(FEMORD)],['Modes_',num2str(NModes)],['coil2roi_',num2str(i),'.mat'])).Time_2;
+            Time_2e = [Time_2e, load(fullfile(output_folder,['FEM_',num2str(FEMORD)],['Modes_',num2str(NModes)],['coil2roi_',num2str(i),'.mat'])).Time_2];
         end
-        Time_2 = Time_2/NModes;
         %Take the QR decomposition of the mode matrix save the modes in the order of
         % highest to lowest singular values 
         [Q,R]=qr(Q,0);
@@ -41,7 +40,8 @@ function [] = offline_parallel_stage_3(NModes,FEMORD,output_folder)
         [U,~] = qr(U,0);
         for ix=1:NModes
             Qi = U(:,ix);
-            save(fullfile(output_folder,['FEM_',num2str(FEMORD)],['Modes_',num2str(NModes)],['Q_',num2str(ix),'.mat']),'Qi','-v7.3');
+            Time_2 = Time_2e(ix);
+            save(fullfile(output_folder,['FEM_',num2str(FEMORD)],['Modes_',num2str(NModes)],['Q_',num2str(ix),'.mat']),'Qi','Time_2','-v7.3');
         end
         %Delete the unnecessary mode files
         for i=1:NModes
@@ -49,6 +49,6 @@ function [] = offline_parallel_stage_3(NModes,FEMORD,output_folder)
             delete(del_file)
         end
         Time_3 = toc(start_time);
-        save(fullfile(output_folder,['FEM_',num2str(FEMORD)],['Modes_',num2str(NModes)],[subject_folder,'_FEM_',num2str(FEMORD),'.mat']),'Time_2','Time_3','-append')
+        save(fullfile(output_folder,['FEM_',num2str(FEMORD)],['Modes_',num2str(NModes)],[subject_folder,'_FEM_',num2str(FEMORD),'.mat']),'Time_3','-append')
     end
 end

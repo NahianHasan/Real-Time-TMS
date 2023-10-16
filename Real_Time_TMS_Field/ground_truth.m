@@ -1,4 +1,5 @@
-function [E_org,Time_gt,Transformation] = ground_truth(real_time_code_path,mode,msh_file,msh_file_read_fcn,msh_file_read_fcn_location,m2m_dir,coil_model_file,FEMORD,mapping_surface,output_folder,varargin)    
+function [E_org,Time_gt,Transformation] = ground_truth(real_time_code_path,mode,msh_file,msh_file_read_fcn,...
+            msh_file_read_fcn_location,m2m_dir,coil_model_file,FEMORD,mapping_surface,output_folder,varargin)    
     multiplying_factor = 6.6E7;
     addpath(msh_file_read_fcn_location);
     addpath(fullfile(real_time_code_path,'matlab'));
@@ -23,22 +24,7 @@ function [E_org,Time_gt,Transformation] = ground_truth(real_time_code_path,mode,
     teid=teid(conductivity==0.2750 | conductivity==0.1260);
     
     %find the teids corresponding to GM surface or GM/WM middle layer
-    if strcmp(mapping_surface, 'GM')% GM/WM surface
-        xx = [];
-        xx(conductivity==.1260)=1; % White
-        xx(conductivity==.2750)=1; % Grey
-        [~,GM_teid]=surftri(p',te2p(:,xx(:)==1)'); % GM/WM surface
-        %[GM_tri,GM_teid]=surftri(p',te2p(:,conductivity==0.2750)'); 
-    elseif strcmp(mapping_surface, 'GMM')% GM middle surface
-        [~,GM_msh] = load_GM_mid_Layer(m2m_dir,model_creation_tool);
-        v1 = GM_msh.nodes(GM_msh.triangles(:,2),:)-GM_msh.nodes(GM_msh.triangles(:,1),:);
-        v2 = GM_msh.nodes(GM_msh.triangles(:,3),:)-GM_msh.nodes(GM_msh.triangles(:,1),:);
-        SA = sum(0.5*vecnorm(cross(v1,v2),2,2),'all')/1E6;
-        warning('off');TR = triangulation(te2p(:,teid)',p');warning('on')
-        GM_teid = pointLocation(TR,GM_msh.nodes/1000);
-        GM_teid(isnan(GM_teid)) = 1;
-        clear TR
-    end
+    [GM_teid,~] = get_mapping_surface(msh_file,msh_file_read_fcn,mapping_surface,m2m_dir,model_creation_tool);
     
     if ~exist(fullfile(output_folder,['FEM_',num2str(FEMORD)],['GT_E_Fields_',coil_model]),'dir')
         mkdir(fullfile(output_folder,['FEM_',num2str(FEMORD)],['GT_E_Fields_',coil_model]))

@@ -23,7 +23,7 @@ coil_model_file = '/scratch/bell/hasan34/data/Real_Time_TMS/Code_Github/Coil_Mod
 run_mode='serial';%options = 'serial','parallel' (for HPC clusters);
 %If parallel, provide the cluster parameters in a separate csv file (cluster_parameters.csv) (compatible with slurm scripting)
 cluster_parameter_file = '/scratch/bell/hasan34/data/Real_Time_TMS/Code_Github/Example_Scripts/cluster_parameters.csv';
-simnibs_installation_dir = '/home/hasan34/SimNIBS-3.2';
+simnibs_installation_dir = '/home/wang3007-1/SimNIBS-3.2';
 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -40,3 +40,11 @@ th_hair = 0.005;%distance from scalp to coil center (in meter).
 %The returned fields are in the host (i.e., cpu).
 memory_calculation = 0;
 [Efields,Time,Memory,data_set_up_time,communication_time,map_teid,map_msh] = real_time_field_calculation_multiple_placements(Q,Ax,params,Transformations,memory_calculation);
+
+%save the results
+save(fullfile(output_folder,['FEM_',num2str(FEMORD)],['Timing_grid_',num2str(grid_spacing),...
+            '_Modes_',num2str(NModes),'_coil_',params{34},'_',lower(params{35}),'.mat']),...
+            'Time','data_set_up_time','communication_time','-v7.3')
+save(fullfile(output_folder,['FEM_',num2str(FEMORD)],['Memory_grid_',num2str(grid_spacing),...
+            '_Modes_',num2str(NModes),'_coil_',params{34},'_',lower(params{35}),'.mat']),...
+            'Memory','-v7.3')

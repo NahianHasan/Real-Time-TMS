@@ -1,4 +1,4 @@
-function [Eout,Hout,rcoil,kcoil,X,Y,Z,coil_thickness,min_coil,del_z] = volumetric_grid(p,del,rcoil,kcoil)
+function [Eout,Hout,rcoil,kcoil,X,Y,Z,coil_thickness,min_coil,del_z] = volumetric_grid(p,del,rcoil,kcoil,varargin)
     del_z = max(p(3,:)) - min(rcoil(:,3));
         
     %Create a grid
@@ -10,6 +10,11 @@ function [Eout,Hout,rcoil,kcoil,X,Y,Z,coil_thickness,min_coil,del_z] = volumetri
     
     %[X,Y,Z] = ndgrid(min(p(1,:))-grid_extension:0.001:max(p(1,:))+grid_extension,min(p(2,:))-grid_extension:0.001:max(p(2,:))+grid_extension,min(p(3,:))-grid_extension:0.001:min(rcoil(:,3)) - (th_hair/2));
     [X,Y,Z] = ndgrid(-1.1*grid_extension:del:1.1*grid_extension,-1.1*grid_extension:del:1.1*grid_extension,-1.5*grid_extension:del:max(rcoil(:,3))+2*del);
+    if size(varargin)>0
+        Eout = [];
+        Hout = [];
+        return;
+    end
     grid_loc = [reshape(X,[],1),reshape(Y,[],1),reshape(Z,[],1)];
     
     %Compute the field at grid points
