@@ -18,7 +18,7 @@ Any commercial usage of the software or integration into another software is res
 If you are benefited by this repository or the research, please cite the following works accordingly based on the methodology used.<br />
 #### [1] Real-Time TMS
 Hasan, N. I., Dannhauer, M., Wang, D., Deng, Z. D., & Gomez, L. J. (2023). Real-Time Computation of Brain E-Field for Enhanced Transcranial Magnetic Stimulation Neuronavigation and Optimization. bioRxiv.<br />
-[Independent Repository]([https://github.com/NahianHasan/PMD-TMS](https://github.com/NahianHasan/Real-Time-TMS))
+[Independent Repository](https://github.com/NahianHasan/Real-Time-TMS)
 #### [2] Probabilistic Matrix Decomposition - Auxiliary Dipole Method (PMD-ADM)
 Hasan, N. I., Wang, D., & Gomez, L. J. (2023). Fast and accurate computational E-field dosimetry for group-level transcranial magnetic stimulation targeting. Computers in Biology and Medicine, 167, 107614.<br />
 [Independent Repository](https://github.com/NahianHasan/PMD-TMS)
