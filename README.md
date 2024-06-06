@@ -22,7 +22,7 @@ Hasan, N. I., Dannhauer, M., Wang, D., Deng, Z. D., & Gomez, L. J. (2023). Real-
 Hasan, N. I., Wang, D., & Gomez, L. J. (2023). Fast and accurate computational E-field dosimetry for group-level transcranial magnetic stimulation targeting. Computers in Biology and Medicine, 167, 107614.<br />
 #### [3] Adaptive Cross Approximation - Auxiliary Dipole Method (ACA-ADM)
 Wang, D., Hasan, N. I., Dannhauer, M., Yucel, A. C., & Gomez, L. J. (2023). Fast computational E-field dosimetry for transcranial magnetic stimulation using adaptive cross approximation and auxiliary dipole method (ACA-ADM). NeuroImage, 267, 119850.<br />
-####[4] Auxiliary Dipole Method (ADM)
+#### [4] Auxiliary Dipole Method (ADM)
 Gomez, L. J., Dannhauer, M., & Peterchev, A. V. (2021). Fast computational optimization of TMS coil placement for individualized electric field targeting. Neuroimage, 228, 117696.<br />
 
 ## Dependencies
