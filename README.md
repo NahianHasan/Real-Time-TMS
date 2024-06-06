@@ -15,8 +15,15 @@ Any commercial usage of the software or integration into another software is res
 
 
 ## Citation
-If you are benefited by this repository or the research, please cite the work as follows.
-[to be updated]
+If you are benefited by this repository or the research, please cite the following works accordingly based on the methodology used.
+### Real-Time-Paper
+
+### Probabilistic Matrix Decomposition - Auxiliary Dipole Method (PMD-ADM)
+
+### Adaptive Cross Approximation - Auxiliary Dipole Method (ACA-ADM)
+
+###  Auxiliary Dipole Method (ADM)
+
 
 ## Dependencies
 - Matlab (Tested with Matlab R2022a)
